@@ -20,12 +20,14 @@ git push -u origin main
 Create a `.env` file in the root directory with:
 
 ```env
-# Database
+# Database - Local Development
 MONGODB_URI=mongodb://localhost:27017/codecircle
-# For production, use MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/codecircle
 
-# JWT Secret (generate a strong random string)
+# Database - Production (MongoDB Atlas)
+# Replace with your actual connection string from MongoDB Atlas
+# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>
+
+# JWT Secret (generate a strong random string for production)
 JWT_SECRET=your-super-secret-jwt-key-here
 
 # Server Configuration
@@ -145,12 +147,27 @@ All errors return consistent format:
 
 ## Security Notes
 
-- Never commit `.env` files to Git
-- Use strong JWT secrets in production
+⚠️ **IMPORTANT SECURITY PRACTICES:**
+
+- **Never commit `.env` files** to Git (already in .gitignore)
+- **Never include real credentials** in documentation or code
+- Use strong, unique JWT secrets in production (generate with: `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`)
+- **Rotate credentials** if accidentally exposed
 - Enable HTTPS in production
-- Regularly update dependencies
+- Regularly update dependencies: `npm audit`
 - Implement rate limiting for production
 - Use environment-specific configurations
+
+### MongoDB Atlas Setup
+1. Create account at [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Create a new cluster
+3. Create database user with strong password
+4. Add your IP address to network access
+5. Get connection string and replace placeholders:
+   - `<username>` - your database username
+   - `<password>` - your database password  
+   - `<cluster>` - your cluster name
+   - `<database>` - your database name (e.g., "codecircle")
 
 ## License
 MIT License - Feel free to use this project as a starting point for your own applications.
