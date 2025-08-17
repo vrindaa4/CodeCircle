@@ -6,6 +6,9 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import PostsFeed from './pages/PostsFeed';
+import CreatePost from './pages/CreatePost';
+import Teams from './pages/Teams';
 import NotFound from './pages/NotFound';
 
 // Components
@@ -34,6 +37,8 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/posts" element={<PostsFeed />} />
+              <Route path="/teams" element={<Teams />} />
               <Route 
                 path="/dashboard" 
                 element={
@@ -42,7 +47,15 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              <Route path="/" element={<Navigate to="/login" />} />
+              <Route 
+                path="/create-post" 
+                element={
+                  <ProtectedRoute>
+                    <CreatePost />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route path="/" element={<Navigate to="/posts" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
