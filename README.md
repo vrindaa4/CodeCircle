@@ -32,8 +32,8 @@ CodeCircle is a modern collaboration platform designed for developers, combining
 
 ### 1. Clone and Install
 ```bash
-git clone <your-repo-url>
-cd ctrl+alt+defeat
+git clone https://github.com/vrindaa4/codecircle.git
+cd codecircle
 npm install
 cd client && npm install && cd ..
 ```
