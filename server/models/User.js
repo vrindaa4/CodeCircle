@@ -45,6 +45,34 @@ const userSchema = new mongoose.Schema({
   emailVerified: {
     type: Boolean,
     default: false
+  },
+  // Reputation system
+  reputation: {
+    type: Number,
+    default: 0
+  },
+  badges: [{
+    name: String,
+    description: String,
+    icon: String,
+    earnedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  stats: {
+    postsCount: { type: Number, default: 0 },
+    commentsCount: { type: Number, default: 0 },
+    upvotesReceived: { type: Number, default: 0 },
+    downvotesReceived: { type: Number, default: 0 },
+    teamsJoined: { type: Number, default: 0 },
+    helpfulAnswers: { type: Number, default: 0 }
+  },
+  preferences: {
+    emailNotifications: { type: Boolean, default: true },
+    pushNotifications: { type: Boolean, default: true },
+    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'light' },
+    language: { type: String, default: 'en' }
   }
 }, {
   timestamps: true,
@@ -99,4 +127,4 @@ userSchema.statics.findByUsername = function(username) {
   return this.findOne({ username: username });
 };
 
-module.exports = mongoose.model('User', userSchema); 
+module.exports = mongoose.model('User', userSchema);

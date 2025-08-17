@@ -1,17 +1,26 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
+const path = require('path');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
+const teamRoutes = require('./routes/teams');
+const notificationRoutes = require('./routes/notifications');
+const searchRoutes = require('./routes/search');
+
+// Import services
+const socketService = require('./services/socketService');
 
 const app = express();
-const PORT = process.env.PORT || 5050; // Using 5050 to avoid conflicts
+const httpServer = http.createServer(app);
+const PORT = process.env.PORT || 5050;
 
 // Connect to MongoDB
 connectDB();
@@ -41,6 +50,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/search', searchRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -69,10 +84,14 @@ app.use('*', (req, res) => {
   });
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Authentication server running on port ${PORT}`);
+// Initialize Socket.io
+socketService.initialize(httpServer);
+
+const server = httpServer.listen(PORT, () => {
+  console.log(`🚀 CodeCircle server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`⚡ Real-time features enabled`);
 });
 
 // Graceful shutdown
