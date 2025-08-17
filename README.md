@@ -1,46 +1,61 @@
-# Online Forum - Authentication System
+# CodeCircle - Developer Collaboration Platform
 
 ## Project Overview
-This is the authentication component of an online forum/discussion board. It provides user registration, login, and authorization functionality using JWT tokens.
+CodeCircle is a modern collaboration platform designed for developers, combining the best features of Reddit-style discussions and StackOverflow-style Q&A. It provides a comprehensive environment for developers to share knowledge, collaborate on projects, and build communities.
 
 ## Features Implemented
-- ✅ User registration with validation
-- ✅ User login with JWT authentication
-- ✅ Password hashing with bcrypt
+- ✅ User registration and authentication with JWT
+- ✅ Secure password hashing with bcrypt
 - ✅ Protected routes middleware
 - ✅ User profile management
-- ✅ JWT token verification
+- ✅ Post creation and management system
+- ✅ Comment system for discussions
+- ✅ Team collaboration features
 - ✅ Rate limiting for security
 - ✅ Input validation and sanitization
+- ✅ Modern responsive React frontend
 
 ## Tech Stack
 - **Backend**: Node.js + Express
-- **Authentication**: Passport.js + JWT
+- **Authentication**: JWT + bcrypt
 - **Database**: MongoDB + Mongoose
 - **Frontend**: React + Context API
 - **Security**: bcrypt, helmet, rate limiting
+- **Development**: Hot reload, ESLint, Prettier ready
 
 ## Quick Start
 
-### 1. Install Dependencies
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or MongoDB Atlas)
+- Git
+
+### 1. Clone and Install
 ```bash
-npm run install-all
+git clone <your-repo-url>
+cd ctrl+alt+defeat
+npm install
+cd client && npm install && cd ..
 ```
 
 ### 2. Environment Setup
 ```bash
 cp env.example .env
-# Edit .env with your configuration
+# Edit .env with your MongoDB connection string and JWT secret
 ```
 
 ### 3. Start Development Servers
 ```bash
-npm run dev
+# Start backend (port 5050)
+npm run server
+
+# In a new terminal, start frontend (port 3001)
+npm run client
 ```
 
-This will start:
-- Backend server on http://localhost:5000
-- Frontend React app on http://localhost:3000
+Visit:
+- Frontend: http://localhost:3001
+- Backend API: http://localhost:5050
 
 ## API Endpoints
 
@@ -49,6 +64,20 @@ This will start:
 - `POST /api/auth/login` - User login
 - `GET /api/auth/profile` - Get user profile (protected)
 - `PUT /api/auth/profile` - Update user profile (protected)
+
+### Posts
+- `GET /api/posts` - Get all posts
+- `POST /api/posts` - Create new post (protected)
+- `GET /api/posts/:id` - Get specific post
+- `PUT /api/posts/:id` - Update post (protected)
+- `DELETE /api/posts/:id` - Delete post (protected)
+- `POST /api/posts/:id/vote` - Vote on post (protected)
+
+### Comments
+- `GET /api/posts/:postId/comments` - Get post comments
+- `POST /api/posts/:postId/comments` - Add comment (protected)
+- `PUT /api/comments/:id` - Update comment (protected)
+- `DELETE /api/comments/:id` - Delete comment (protected)
 
 ### Request/Response Examples
 
@@ -75,37 +104,56 @@ POST /api/auth/login
 ```
 ├── server/
 │   ├── config/
-│   │   ├── db.js          # Database connection
-│   │   └── passport.js    # Passport configuration
+│   │   └── db.js              # Database connection
 │   ├── middleware/
-│   │   ├── auth.js        # JWT authentication middleware
-│   │   └── validation.js  # Input validation
+│   │   ├── auth.js            # JWT authentication middleware
+│   │   └── validation.js      # Input validation
 │   ├── models/
-│   │   └── User.js        # User model
+│   │   ├── User.js            # User model
+│   │   ├── Post.js            # Post model
+│   │   ├── Comment.js         # Comment model
+│   │   └── Team.js            # Team model
 │   ├── routes/
-│   │   └── auth.js        # Authentication routes
-│   └── index.js           # Main server file
+│   │   ├── auth.js            # Authentication routes
+│   │   ├── posts.js           # Post management routes
+│   │   └── comments.js        # Comment routes
+│   └── index.js               # Main server file
 ├── client/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── pages/
-│   │   └── services/
+│   │   ├── components/        # Reusable UI components
+│   │   ├── context/           # React Context providers
+│   │   ├── pages/             # Main application pages
+│   │   ├── App.js             # Main app component
+│   │   └── index.js           # React entry point
+│   ├── public/
 │   └── package.json
-└── package.json
+├── package.json               # Root package configuration
+├── .gitignore                 # Git ignore rules
+├── env.example                # Environment variables template
+└── README.md                  # Project documentation
 ```
 
-## Security Features
-- Password hashing with bcrypt
-- JWT token authentication
-- Rate limiting on auth endpoints
-- Input validation and sanitization
-- CORS configuration
-- Helmet security headers
+## Development Features
+- **Hot Reload**: Both frontend and backend support hot reloading
+- **Error Handling**: Comprehensive error handling and validation
+- **Security**: JWT authentication, password hashing, rate limiting
+- **Modern UI**: Responsive design with modern CSS
+- **Team Ready**: Built for collaborative development
+
+## Contributing
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Team Integration
-This authentication system is designed to be easily integrated with other team members' work:
-- Clear API contracts
+This platform is designed for seamless team collaboration:
+- Clear API contracts for easy integration
 - Standardized error responses
-- JWT tokens for session management
-- Protected route middleware ready for use 
+- JWT tokens for secure session management
+- Modular architecture for easy feature additions
+- Comprehensive documentation for team onboarding 
