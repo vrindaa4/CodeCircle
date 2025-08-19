@@ -1,107 +1,81 @@
-const express = require('express');
 const http = require('http');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const mongoose = require('mongoose');
 const path = require('path');
-require('dotenv').config();
 
+// --- Third-party Libraries ---
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config(); // Loads environment variables from a .env file
+
+// --- Application-specific Imports ---
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
-const teamRoutes = require('./routes/teams');
-const notificationRoutes = require('./routes/notifications');
-const searchRoutes = require('./routes/search');
 
-// Import services
-const socketService = require('./services/socketService');
-
+// --- Initializations ---
 const app = express();
-const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 5050;
 
-// Connect to MongoDB
+// --- Database Connection ---
 connectDB();
 
-// Security middleware
-app.use(helmet());
+// --- Middleware ---
+
+// Enable Cross-Origin Resource Sharing (CORS)
+// This allows your frontend (running on a different port) to communicate with this backend.
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
-    : ['http://localhost:3000', 'http://localhost:3001'],
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use('/api/auth', limiter);
-
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// This allows Express to read JSON data from request bodies.
+app.use(express.json());
 
-// Routes
+// --- API Routes ---
+// All authentication-related routes will be prefixed with /api/auth
 app.use('/api/auth', authRoutes);
+// All post-related routes will be prefixed with /api/posts
 app.use('/api/posts', postRoutes);
+// All comment-related routes will be prefixed with /api/comments
 app.use('/api/comments', commentRoutes);
-app.use('/api/teams', teamRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/search', searchRoutes);
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Health check endpoint
+// --- Health Check Endpoint ---
+// A simple route to check if the server is running.
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'Authentication server is running',
+    message: 'Server is healthy',
     timestamp: new Date().toISOString()
   });
 });
 
-// Error handling middleware
+// --- Global Error Handler ---
+// This middleware catches any errors that occur in the route handlers.
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
     success: false, 
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    message: 'An unexpected error occurred on the server.'
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
+// --- 404 Not Found Handler ---
+// This middleware catches any requests for routes that don't exist.
+app.use((req, res) => {
   res.status(404).json({ 
     success: false, 
-    message: 'Route not found' 
+    message: 'The requested resource was not found.' 
   });
 });
 
-// Initialize Socket.io
-socketService.initialize(httpServer);
 
-const server = httpServer.listen(PORT, () => {
-  console.log(`🚀 CodeCircle server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`⚡ Real-time features enabled`);
-});
+// --- Server Startup ---
+const server = http.createServer(app);
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('🔌 Received SIGINT. Shutting down gracefully.');
-  server.close(() => {
-    console.log('✅ HTTP server closed.');
-    mongoose.connection.close(false, () => {
-      console.log('MONGO DB CLOSED');
-      process.exit(0);
-    });
-  });
+server.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });

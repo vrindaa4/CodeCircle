@@ -3,91 +3,43 @@ const mongoose = require('mongoose');
 const postSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Title is required'],
+    required: [true, 'A post must have a title'],
     trim: true,
-    minlength: [5, 'Title must be at least 5 characters long'],
-    maxlength: [200, 'Title cannot exceed 200 characters']
+    minlength: 5
   },
   content: {
     type: String,
-    required: [true, 'Content is required'],
-    trim: true,
-    minlength: [10, 'Content must be at least 10 characters long']
+    required: [true, 'A post must have content'],
+    trim: true
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'User', // This creates a reference to the User model
     required: true
   },
-  tags: [{
-    type: String,
-    trim: true,
-    lowercase: true
-  }],
-  projectUrl: {
-    type: String,
-    trim: true,
-    validate: {
-      validator: function(v) {
-        // Basic URL validation
-        return v === '' || /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w.-]*)*\/?$/.test(v);
-      },
-      message: props => `${props.value} is not a valid URL!`
-    }
-  },
-  upvotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  downvotes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  views: {
-    type: Number,
-    default: 0
-  },
-  category: {
-    type: String,
-    required: [true, 'Category is required'],
-    enum: ['project_idea', 'project_showcase', 'question', 'discussion', 'resource', 'other']
-  },
-  status: {
-    type: String,
-    enum: ['open', 'in_progress', 'completed', 'closed'],
-    default: 'open'
-  },
-  isArchived: {
-    type: Boolean,
-    default: false
-  }
+  tags: [String], // A simple array of strings for tags
+  
+  // Voting system
+  upvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  downvotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  
 }, {
+  // Add timestamps (createdAt, updatedAt)
   timestamps: true,
+  // Enable virtual properties to be included in JSON and object outputs
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Virtual for comments
-postSchema.virtual('comments', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'post'
-});
+// --- Mongoose Virtuals ---
 
-// Index for better query performance
-postSchema.index({ title: 'text', content: 'text', tags: 1 });
-postSchema.index({ category: 1 });
-postSchema.index({ author: 1 });
-postSchema.index({ createdAt: -1 });
-
-// Static method to find posts by tag
-postSchema.statics.findByTag = function(tag) {
-  return this.find({ tags: tag.toLowerCase() });
-};
-
-// Calculate score based on upvotes and downvotes
+// A virtual property 'score' is not stored in the database
+// but calculated on the fly when you access it.
 postSchema.virtual('score').get(function() {
+  // 'this' refers to the current post document
   return this.upvotes.length - this.downvotes.length;
 });
 
-module.exports = mongoose.model('Post', postSchema);
+const Post = mongoose.model('Post', postSchema);
+
+module.exports = Post;

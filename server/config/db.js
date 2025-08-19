@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/online-forum', {
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/codecircle', {
     });
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
@@ -25,7 +25,16 @@ const connectDB = async () => {
 
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
-    process.exit(1);
+    console.log('📝 Note: Make sure MongoDB is installed and running');
+    console.log('📝 Install: brew tap mongodb/brew && brew install mongodb-community');
+    console.log('📝 Start: brew services start mongodb/brew/mongodb-community');
+    console.log('⚠️ Server will continue without database connection...');
+    
+    // Try to reconnect after 5 seconds
+    setTimeout(() => {
+      console.log('🔄 Attempting to reconnect to MongoDB...');
+      connectDB();
+    }, 5000);
   }
 };
 
