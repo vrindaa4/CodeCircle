@@ -11,17 +11,13 @@ CodeCircle is a modern collaboration platform designed for developers, combining
 - ✅ Post creation and management system
 - ✅ Comment system for discussions
 - ✅ Team collaboration features
-- ✅ Rate limiting for security
-- ✅ Input validation and sanitization
-- ✅ Modern responsive React frontend
 
 ## Tech Stack
 - **Backend**: Node.js + Express
 - **Authentication**: JWT + bcrypt
 - **Database**: MongoDB + Mongoose
 - **Frontend**: React + Context API
-- **Security**: bcrypt, helmet, rate limiting
-- **Development**: Hot reload, ESLint, Prettier ready
+- **Security**: bcrypt
 
 ## Quick Start
 
