@@ -130,9 +130,8 @@ POST /api/auth/login
 ```
 
 ## Development Features
-- **Hot Reload**: Both frontend and backend support hot reloading
 - **Error Handling**: Comprehensive error handling and validation
-- **Security**: JWT authentication, password hashing, rate limiting
+- **Security**: JWT authentication, password hashing
 - **Modern UI**: Responsive design with modern CSS
 - **Team Ready**: Built for collaborative development
 
@@ -143,8 +142,6 @@ POST /api/auth/login
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Team Integration
 This platform is designed for seamless team collaboration:
